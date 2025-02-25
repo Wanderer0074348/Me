@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-y-0 {
+  transform: rotateY(0deg);
+}
+
+.rotate-y-15 {
+  transform: rotateY(15deg);
+}
+
+.rotate-y-40 {
+  transform: rotateY(40deg);
+}
+
+.rotate-y-minus-15 {
+  transform: rotateY(-15deg);
+}
+
+.rotate-y-minus-40 {
+  transform: rotateY(-40deg);
+}
+
+.origin-left {
+  transform-origin: left center;
+}
+
+.origin-right {
+  transform-origin: right center;
+}
