@@ -3,14 +3,14 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 export default function Navbar() {
-  const [isHovered, setIsHovered] = useState(null);
-  const [currentTime, setCurrentTime] = useState('');
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState<string>('');
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   
   // Update time every second
   useEffect(() => {
-    const updateTime = () => {
+    const updateTime = (): void => {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -26,7 +26,7 @@ export default function Navbar() {
   
   // Track scroll position
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       setScrollPosition(window.scrollY);
     };
     
@@ -36,7 +36,7 @@ export default function Navbar() {
 
   // Close mobile menu when resizing to larger screen
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = (): void => {
       if (window.innerWidth >= 640 && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
       }
@@ -46,7 +46,7 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileMenuOpen]);
   
-  const navItems = ['HOME', 'PROJECTS', 'BLOG'];
+  const navItems: string[] = ['HOME', 'PROJECTS', 'BLOG'];
   
   return (
     <nav className={`

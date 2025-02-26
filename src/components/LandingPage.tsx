@@ -1,9 +1,18 @@
 "use client";
 import { useState, useEffect } from 'react';
+import MatrixRain from '../components/MatrixRain';
+
+interface GridCell {
+  key: number;
+  opacity: number;
+  hasBackground: boolean;
+}
 
 export default function LandingPage() {
-  const [activeSection, setActiveSection] = useState('main');
-  const [glitchActive, setGlitchActive] = useState(false);
+  const [activeSection, setActiveSection] = useState<'main' | 'about'>('main');
+  const [glitchActive, setGlitchActive] = useState<boolean>(false);
+  const [gridCells, setGridCells] = useState<GridCell[]>([]);
+  const [isClient, setIsClient] = useState<boolean>(false);
   
   // Create glitch effect when switching sections
   useEffect(() => {
@@ -14,12 +23,58 @@ export default function LandingPage() {
     return () => clearTimeout(timer);
   }, [activeSection]);
   
+  // Generate grid cells only on client-side
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Generate the grid cells with random properties
+    const cells: GridCell[] = [...Array(1600)].map((_, i) => ({
+      key: i,
+      opacity: Math.random() > 0.7 ? 0.4 : 0.1,
+      hasBackground: Math.random() > 0.95
+    }));
+    
+    setGridCells(cells);
+  }, []);
+  
   return (
     <main className="min-h-screen p-4 md:p-8 bg-black mt-10 relative overflow-hidden">
+      {/* Matrix Rain Background */}
+      <MatrixRain />
       {/* Brutalist Background Shapes - Only visible on larger screens */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none hidden md:block">
-        {/* Large circle */}
-        <div className="absolute top-1/4 -right-20 w-64 h-64 border-4 border-white opacity-10"></div>
+        {/* Matrix-like grid with alternating green and white vertical lines */}
+        <div className="absolute inset-0 z-[-1] opacity-15 hidden md:block">
+          {isClient && (
+            <>
+              <div className="grid grid-cols-40 grid-rows-40 h-screen w-screen">
+                {gridCells.map((cell) => (
+                  <div 
+                    key={cell.key} 
+                    className="border-[0.5px] border-white opacity-80"
+                    style={{
+                      opacity: cell.opacity,
+                      backgroundColor: cell.hasBackground ? 'rgba(255,255,255,0.1)' : 'transparent'
+                    }}
+                  ></div>
+                ))}
+              </div>
+              
+              {/* Alternating green and white vertical lines */}
+              <div className="absolute inset-0 flex justify-between">
+                {[...Array(70)].map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`w-[10px] h-full ${i % 2 === 0 ? 'bg-green-500' : 'bg-white'}`}
+                    style={{ opacity: i % 2 === 0 ? 0.6 : 0.40 }}
+                  ></div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        {/* Large circle
+        <div className="absolute top-1/4 -right-20 w-64 h-64 border-4 border-white opacity-80"></div> */}
         
         {/* Cross shape */}
         <div className="absolute bottom-1/3 -left-20 w-40 h-8 bg-white opacity-7"></div>
@@ -30,57 +85,60 @@ export default function LandingPage() {
           style={{ transform: 'rotate(45deg)' }}></div>
         <div className="absolute bottom-20 right-1/4 w-1 h-40 bg-white opacity-7" 
           style={{ transform: 'rotate(-45deg)' }}></div>
-          
-        {/* Square */}
-        <div className="absolute top-2/3 left-1/3 w-20 h-20 border-4 border-white opacity-8"></div>
+        
         
         {/* Dot pattern */}
-        <div className="absolute top-1/3 right-1/3 grid grid-cols-5 gap-4 opacity-9">
-          {[...Array(25)].map((_, i) => (
+        <div className="absolute top-1/4 right-0 grid grid-cols-10 gap-5 opacity-30">
+          {[...Array(150)].map((_, i) => (
             <div key={i} className="w-2 h-2 bg-white rounded-full"></div>
           ))}
         </div>
         
         {/* Triangle */}
-        <div className="absolute bottom-1/4 right-1/4 w-0 h-0 opacity-9"
+        <div className="absolute bottom-1/4 right-1/4 w-0 h-0 opacity-90"
           style={{ 
-            borderLeft: '30px solid transparent', 
-            borderRight: '30px solid transparent', 
-            borderBottom: '60px solid white' 
+            borderLeft: '60px solid transparent', 
+            borderRight: '60px solid transparent', 
+            borderBottom: '120px solid white' 
           }}>
         </div>
-        {/* C Code Lines */}
+        {/* C Code - Memory Management */}
         <div className="absolute top-60 left-10 font-mono text-s text-white opacity-80 whitespace-pre">
-          {'#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char *argv[]) {\n  printf("Hello, Low Level World\\n");\n  \n  int *ptr = (int*)malloc(sizeof(int) * 10);\n  if (ptr == NULL) {\n    return EXIT_FAILURE;\n  }\n  \n  for (int i = 0; i < 10; i++) {\n    ptr[i] = i * 2;\n  }\n  \n  free(ptr);\n  return EXIT_SUCCESS;\n}'}
+          {'#include <stdio.h>\n#include <stdlib.h>\n\nint main(int argc, char *argv[]) {\n  printf("Hello, Welcome to my Portfolio!\\n");\n  \n  int *projects = (int*)malloc(sizeof(int) * 10);\n  if (projects == NULL) {\n    return EXIT_FAILURE;\n  }\n  \n  for (int i = 0; i < 10; i++) {\n    projects[i] = 2023 + i; // Years of upcoming projects\n  }\n  \n  free(projects);\n  return EXIT_SUCCESS;\n}'}
         </div>
 
+        {/* Rust Code - Systems Programming */}
         <div className="absolute bottom-40 right-20 font-mono text-sm text-white opacity-80 whitespace-pre">
-          {'void kernel_entry() {\n  clear_screen();\n  kprint("SYSTEM INITIALIZED\\n");\n  \n  init_memory();\n  init_interrupts();\n  \n  while(1) {\n    // Kernel main loop\n    check_processes();\n    handle_syscalls();\n    update_scheduler();\n  }\n}'}
+          {'fn portfolio_init() -> Result<(), Error> {\n  println!("PORTFOLIO INITIALIZED");\n  \n  let skills = vec!["Systems", "Cloud", "DevOps"];\n  let projects = initialize_projects()?;\n  \n  loop {\n    // Main portfolio showcase\n    update_visitor_count();\n    handle_contact_requests();\n    display_latest_work();\n  }\n}'}
         </div>
 
+        {/* Python Code - Data Analysis */}
         <div className="absolute top-2/3 left-40 font-mono text-xxxl text-white opacity-100 whitespace-pre transform">
-          {'struct Node {\n  int data;\n  struct Node* next;\n};\n\nstruct Node* create_node(int value) {\n  struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));\n  new_node->data = value;\n  new_node->next = NULL;\n  return new_node;\n}'}
+          {'import pandas as pd\nimport matplotlib.pyplot as plt\n\ndef analyze_skills():\n    skills = {\n        "Infrastructure": 95,\n        "Cloud": 90,\n        "DevOps": 85,\n        "Security": 80\n    }\n    \n    df = pd.DataFrame(skills.items())\n    plt.bar(df[0], df[1])\n    plt.title("My Technical Skills")\n    plt.show()\n    \nanalyze_skills()'}
         </div>
+
+        {/* Bash Script - Automation */}
         <div className="absolute top-1/3 left-3/4 font-mono text-xxxl text-white opacity-100 whitespace-pre transform">
-          {'struct Node {\n  int data;\n  struct Node* next;\n};\n\nstruct Node* create_node(int value) {\n  struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));\n  new_node->data = value;\n  new_node->next = NULL;\n  return new_node;\n}'}
+          {'#!/bin/bash\n\necho "Deploying Portfolio Website..."\n\n# Check dependencies\nif [ ! -d "node_modules" ]; then\n  echo "Installing dependencies..."\n  npm install\nfi\n\n# Build and deploy\nnpm run build\n\necho "Portfolio successfully deployed!"\nexit 0'}
         </div>
-          {/* "WOW" in binary */}
-      <div className="absolute top-20 right-1/4 font-mono text-xl text-white opacity-60 tracking-wider">
+        
+        {/* "WOW" in binary */}
+        <div className="absolute top-20 right-1/4 font-mono text-xl text-white opacity-60 tracking-wider">
           01010111 01001111 01010111
         </div>
         
         {/* Binary Graffiti - Abstract face */}
-        <div className="absolute bottom-40 left-20 font-mono text-xs text-white opacity-40 whitespace-pre">
+        <div className="absolute bottom-[500px] left-[450px] font-mono text-xl text-white opacity-20 whitespace-pre">
           {'10101010101010101010\n01111111111111111110\n10100100001001001010\n10101000001000101010\n10100000000000001010\n10100100000001001010\n10101000000000101010\n10101010000010101010\n01111111111111111110\n10101010101010101010'}
         </div>
         
         {/* Binary Graffiti - Abstract pattern */}
-        <div className="absolute top-1/3 left-1/2 font-mono text-xs text-white opacity-30 whitespace-pre transform rotate-12">
+        <div className="absolute top-1/3 left-1/2 font-mono text-xs text-white opacity-70 whitespace-pre transform">
           {'0101010101010101\n1010101010101010\n0101010101010101\n1010101010101010\n0101010101010101\n1010101010101010\n0101010101010101\n1010101010101010'}
         </div>
         
         {/* Binary Code Stream */}
-        <div className="absolute -top-10 left-1/3 font-mono text-sm text-white opacity-20 whitespace-pre transform -rotate-45">
+        <div className="absolute top-[500px] left-[300px] font-mono text-l text-white opacity-60 whitespace-pre transform">
           {'01001000 01000001 01000011 01001011\n01010100 01001000 01000101 01010000\n01001100 01000001 01001110 01000101\n01010100 00100001 00100001 00100001'}
         </div>
       </div>
